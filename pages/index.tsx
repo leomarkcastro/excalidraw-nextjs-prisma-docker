@@ -95,8 +95,10 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
   return (
     <>
       <div className="mx-auto mb-24 max-w-screen-lg px-6 pt-16">
-        <div className="flex items-end justify-between">
-          <h1 className="text-4xl font-bold">Personal Excalidraw</h1>
+        <div className="flex flex-col items-end justify-between sm:flex-row sm:items-center">
+          <h1 className="text-4xl font-bold">
+            Personal <Link href="https://excalidraw.com">Excalidraw</Link>
+          </h1>
           <Auth />
         </div>
         <br />

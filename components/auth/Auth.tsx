@@ -11,8 +11,11 @@ export default function Auth() {
 
   if (session) {
     return (
-      <div className="flex flex-col items-end justify-end text-right">
-        <p>Signed in as {session.user?.email}</p>
+      <div className="flex flex-col items-end justify-end break-all text-right">
+        <p>
+          Signed in as <br />
+          {session.user?.email}
+        </p>
         <button className="text-secondary" onClick={() => signOut()}>
           Sign out
         </button>
