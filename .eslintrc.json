@@ -1,0 +1,6 @@
+{
+  "extends": ["next", "prettier"],
+  "globals": {
+    "React": "readonly"
+  }
+}
