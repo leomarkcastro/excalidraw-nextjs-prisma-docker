@@ -10,6 +10,7 @@ WORKDIR /usr/src/app
 
 # Install Dependencies
 COPY package*.json ./
+COPY yarn.lock ./
 
 RUN yarn install
 
