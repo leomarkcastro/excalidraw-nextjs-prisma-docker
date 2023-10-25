@@ -26,7 +26,11 @@ export default function Auth() {
     <>
       <button
         className="bg-secondary p-2 text-secondary-content"
-        onClick={() => signIn()}
+        onClick={() =>
+          signIn(undefined, {
+            callbackUrl: window.location.href,
+          })
+        }
       >
         Sign in
       </button>
