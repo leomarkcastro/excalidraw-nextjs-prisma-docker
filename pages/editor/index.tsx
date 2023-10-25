@@ -1,6 +1,7 @@
 import SaveLocalFileModal from '@/components/list-page/save-local-modal';
 import UpdatePageModal from '@/components/list-page/update-page-modal';
 import { trpc } from '@/lib/server/trpc';
+import { ExcalidrawInitialDataState } from '@excalidraw/excalidraw/types/types';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -52,18 +53,27 @@ export default function App(props: { page_id: string; content_id: string }) {
     if (pageGetLatest.isLoading) return;
     if (Date.now() - lastSave.current < saveEvery) return;
     lastSave.current = Date.now();
+
     const elements = excalidrawRef.getSceneElements();
     const files = excalidrawRef.getFiles();
+    const appState = excalidrawRef.getAppState();
+
     const elements_stringified = JSON.stringify(elements);
     const files_stringified = JSON.stringify(files);
-    if (elements_stringified === lastSavedScene) return;
-    setLastSavedScene(elements_stringified);
+    const appState_stringified = JSON.stringify(appState);
+
+    const cachedState =
+      elements_stringified + appState_stringified + files_stringified;
+
+    if (cachedState === lastSavedScene) return;
+    setLastSavedScene(cachedState);
     // remove version query param without reloading
     window.history.replaceState({}, '', `/editor?page=${props.page_id}`);
     const update = await contentUpdate.mutateAsync({
       pageId: props.page_id as string,
       content: elements_stringified,
       files: files_stringified,
+      appState: appState_stringified,
     });
   }
 
@@ -71,24 +81,46 @@ export default function App(props: { page_id: string; content_id: string }) {
     if (!excalidrawRef) return;
     if (Date.now() - lastSave.current < saveEvery) return;
     lastSave.current = Date.now();
+
     const elements = excalidrawRef.getSceneElements();
     const files = excalidrawRef.getFiles();
+    const appState = excalidrawRef.getAppState();
+
     const elements_stringified = JSON.stringify(elements);
     const files_stringified = JSON.stringify(files);
-    if (elements_stringified === lastSavedScene) return;
-    setLastSavedScene(elements_stringified);
+    const appState_stringified = JSON.stringify(appState);
+
+    const cachedState =
+      elements_stringified + appState_stringified + files_stringified;
+
+    if (cachedState === lastSavedScene) return;
+    setLastSavedScene(cachedState);
     localStorage?.setItem('excalidraw_elements', elements_stringified);
     localStorage?.setItem('excalidraw_files', files_stringified);
+    localStorage?.setItem('excalidraw_appState', appState_stringified);
   }
 
   function fetchLocalSaved() {
     const localStorage = typeof window !== 'undefined' && window.localStorage;
-    if (!localStorage) return { elements: [], files: [] };
+    if (!localStorage)
+      return {
+        elements: [] as ExcalidrawInitialDataState['elements'],
+        files: [] as any,
+        appState: {} as ExcalidrawInitialDataState['appState'],
+      };
     const elements = localStorage?.getItem('excalidraw_elements');
     const files = localStorage?.getItem('excalidraw_files');
+    const appState = localStorage?.getItem('excalidraw_appState');
     return {
-      elements: elements ? JSON.parse(elements) : [],
-      files: files ? JSON.parse(files) : [],
+      elements: (elements
+        ? JSON.parse(elements)
+        : []) as ExcalidrawInitialDataState['elements'],
+      files: (files
+        ? JSON.parse(files)
+        : []) as ExcalidrawInitialDataState['files'],
+      appState: (appState
+        ? JSON.parse(appState)
+        : {}) as ExcalidrawInitialDataState['appState'],
     };
   }
 
@@ -140,6 +172,39 @@ export default function App(props: { page_id: string; content_id: string }) {
     );
   }
 
+  function fetchOnlineSaved() {
+    return {
+      files: JSON.parse(
+        pageGetLatest.data?.content?.files ?? '[]'
+      ) as ExcalidrawInitialDataState['files'],
+      elements: JSON.parse(
+        pageGetLatest.data?.content?.content ?? '[]'
+      ) as ExcalidrawInitialDataState['elements'],
+      appState: JSON.parse(
+        pageGetLatest.data?.content?.appState ?? '{}'
+      ) as ExcalidrawInitialDataState['appState'],
+    };
+  }
+
+  function fetchData() {
+    let toRet;
+    if (isCloudFetched) {
+      toRet = fetchOnlineSaved();
+    } else {
+      toRet = fetchLocalSaved();
+    }
+
+    //
+    if (Object.keys(toRet.appState?.collaborators ?? {})) {
+      if (toRet.appState?.collaborators) {
+        // @ts-ignore
+        toRet.appState.collaborators = undefined;
+      }
+    }
+
+    return toRet;
+  }
+
   return (
     <>
       <div className="relative flex h-screen w-screen items-center justify-center">
@@ -155,16 +220,7 @@ export default function App(props: { page_id: string; content_id: string }) {
           isPublic={pageGetLatest.data?.isPublic ?? false}
           isAuthed={user.status === 'authenticated'}
           isCloudFetched={isCloudFetched}
-          initialData={
-            isCloudFetched
-              ? {
-                  files: JSON.parse(pageGetLatest.data?.content?.files ?? '[]'),
-                  elements: JSON.parse(
-                    pageGetLatest.data?.content?.content ?? '[]'
-                  ),
-                }
-              : fetchLocalSaved()
-          }
+          initialData={fetchData()}
           onChange={onChange}
           lastSaved={
             !isCloudFetched
@@ -205,6 +261,7 @@ export default function App(props: { page_id: string; content_id: string }) {
       <SaveLocalFileModal
         content={JSON.stringify(excalidrawRef?.getSceneElements())}
         files={JSON.stringify(excalidrawRef?.getFiles())}
+        appState={JSON.stringify(excalidrawRef?.getAppState())}
       />
     </>
   );

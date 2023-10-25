@@ -475,6 +475,7 @@ export const excalidrawRouter = router({
         pageId: z.string(),
         files: z.string(),
         content: z.string(),
+        appState: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -523,6 +524,7 @@ export const excalidrawRouter = router({
           data: {
             content: input.content,
             files: input.files,
+            appState: input.appState,
             pageId: input.pageId,
           },
         });
@@ -534,6 +536,7 @@ export const excalidrawRouter = router({
           data: {
             files: input.files,
             content: input.content,
+            appState: input.appState,
           },
         });
       }

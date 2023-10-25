@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 export interface SaveLocalFileModalProps {
   content: string;
   files: string;
+  appState: string;
 }
 
 const SaveLocalFileModal: React.FC<SaveLocalFileModalProps> = (props) => {
@@ -60,6 +61,7 @@ const SaveLocalFileModal: React.FC<SaveLocalFileModalProps> = (props) => {
                 pageId: newPage,
                 content: props.content,
                 files: props.files,
+                appState: props.appState,
               });
 
               window.localStorage.removeItem('excalidraw_elements');
