@@ -55,7 +55,7 @@ export default function ExcalidrawComponent(props: ExcalidrawProps) {
             {props.isAuthed && !props.isCloudFetched && (
               <label
                 htmlFor="save-local-file"
-                className="cursor-pointer rounded-lg border border-neutral-600 bg-base-300 p-1 pt-[0.6rem] text-xs text-neutral-400 hover:bg-base-200"
+                className="cursor-pointer rounded-lg border border-neutral-600 bg-base-300 p-1 pt-[0.5rem] text-xs text-neutral-300 hover:bg-base-200"
               >
                 Save to Cloud
               </label>

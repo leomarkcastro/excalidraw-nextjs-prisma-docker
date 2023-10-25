@@ -5,7 +5,7 @@ import type {
 import { getCsrfToken, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SignIn({
   csrfToken,
@@ -14,12 +14,37 @@ export default function SignIn({
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
+    // get query params
+    console.log('router.query', router.query);
+    if (router.query.callbackUrl) {
+      console.log(router.query.callbackUrl);
+      // router.replace(router.query.callbackUrl as string);
+    }
+  }, [router]);
+
   return (
     <div className="flex min-h-screen items-center justify-center font-mono">
       <div className="d-card w-96 bg-base-100 shadow-xl">
         <div className="d-card-body text-center font-bold">
           <h1 className="text-4xl font-bold">Login</h1>
-          <div>
+          <br />
+          <button
+            className="d-btn-ghost d-btn border-2 border-primary"
+            onClick={async () => {
+              const resp = await signIn('google', {
+                redirect: true,
+                callbackUrl: router.query.callbackUrl as string,
+              });
+            }}
+          >
+            Login with Google
+          </button>
+          <div className="">
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <div className="d-form-control w-full max-w-xs">
               <label className="d-label">
