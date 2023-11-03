@@ -77,10 +77,9 @@ const SaveLocalFileModal: React.FC<SaveLocalFileModalProps> = (props) => {
               <select
                 className="d-select-bordered d-select w-full"
                 name="nBNotebook"
+                defaultValue={'((none))'}
               >
-                <option selected value="((none))">
-                  (None)
-                </option>
+                <option value="((none))">(None)</option>
                 {notebookList.data?.map((notebook) => {
                   return (
                     <option key={notebook.id} value={notebook.id}>

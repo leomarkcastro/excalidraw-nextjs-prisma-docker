@@ -24,6 +24,9 @@ export default function ExcalidrawComponent(props: ExcalidrawProps) {
   return (
     <Excalidraw
       {...props}
+      // initialData={{
+      //   libraryItems: [{}],
+      // }}
       ref={(api) => {
         setExcalidrawRef(api);
         props.setItemRef?.(api);

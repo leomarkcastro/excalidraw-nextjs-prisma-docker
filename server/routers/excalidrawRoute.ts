@@ -464,6 +464,7 @@ export const excalidrawRouter = router({
       }
       return {
         content: page.Content[0],
+        library: page.Notebook.library,
         documentName: `${page.Notebook.name} - ${page.name}`,
         isPublic: page.public,
       };
@@ -476,6 +477,7 @@ export const excalidrawRouter = router({
         files: z.string(),
         content: z.string(),
         appState: z.string(),
+        library: z.string().optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -519,6 +521,17 @@ export const excalidrawRouter = router({
           },
         },
       });
+      if (input.library) {
+        // update the notebook library
+        await ctx.prisma.notebook.update({
+          where: {
+            id: page.notebookId,
+          },
+          data: {
+            library: input.library,
+          },
+        });
+      }
       if (!content) {
         return await ctx.prisma.content.create({
           data: {

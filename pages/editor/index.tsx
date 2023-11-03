@@ -45,6 +45,62 @@ export default function App(props: { page_id: string; content_id: string }) {
   const lastSave = useRef(Date.now());
   const declaredShortcuts = useRef(false);
 
+  const [checkingFiles, setCheckingFiles] = useState<any>(true);
+  const isProcessing = useRef(false);
+
+  async function processEmbeddedLibrary(addLibrary: string | null) {
+    if (!addLibrary) {
+      return;
+    }
+    // get the json from the url
+    const response = await fetch(addLibrary);
+    let json = await response.json();
+    // console.log(json);
+    json = json.libraryItems;
+    // if excalidraw is already loaded, add the library
+    const currentExcalidraw = localStorage?.getItem('excalidraw_library');
+    if (currentExcalidraw) {
+      const currentExcalidrawJson = JSON.parse(currentExcalidraw);
+      currentExcalidrawJson.push(...json);
+
+      // console.log(json);
+      localStorage?.setItem(
+        'excalidraw_library',
+        JSON.stringify(currentExcalidrawJson)
+      );
+    } else {
+      // console.log(json);
+      // otherwise, save the library to local storage
+      localStorage?.setItem('excalidraw_library', JSON.stringify(json));
+    }
+    // remove the hash params but retain the query params
+    window.history.replaceState(
+      {},
+      '',
+      window.location.pathname + window.location.search
+    );
+  }
+
+  useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+    // check if addLibrary exists in the hash params
+    if (!router.query.addLibrary) {
+      setCheckingFiles(false);
+    }
+    // get the hash query params
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    // parse the addLibrary param
+    const addLibrary = hashParams.get('addLibrary');
+
+    if (isProcessing.current) {
+      return;
+    }
+    isProcessing.current = true;
+    processEmbeddedLibrary(addLibrary);
+  }, [router]);
+
   async function onChangeCloud() {
     if (!user.data?.user) return;
     if (!excalidrawRef) return;
@@ -111,6 +167,8 @@ export default function App(props: { page_id: string; content_id: string }) {
     const elements = localStorage?.getItem('excalidraw_elements');
     const files = localStorage?.getItem('excalidraw_files');
     const appState = localStorage?.getItem('excalidraw_appState');
+    const libraryFile = localStorage?.getItem('excalidraw_library');
+
     return {
       elements: (elements
         ? JSON.parse(elements)
@@ -121,6 +179,9 @@ export default function App(props: { page_id: string; content_id: string }) {
       appState: (appState
         ? JSON.parse(appState)
         : {}) as ExcalidrawInitialDataState['appState'],
+      libraryItems: JSON.parse(
+        libraryFile ?? '[]'
+      ) as ExcalidrawInitialDataState['libraryItems'],
     };
   }
 
@@ -164,15 +225,26 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   if (isCloudFetched && pageGetLatest.isLoading) {
     return (
-      <div className="relative flex h-screen w-screen items-center justify-center">
-        <div className="tranform absolute top-1/2 left-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 rounded-md p-2">
+      <div className="relative flex items-center justify-center w-screen h-screen">
+        <div className="absolute p-2 -translate-x-1/2 -translate-y-1/2 rounded-md tranform top-1/2 left-1/2 h-fit w-fit">
           <p className="animate-pulse">Loading...</p>
         </div>
       </div>
     );
   }
 
+  if (checkingFiles) {
+    return (
+      <div className="relative flex items-center justify-center w-screen h-screen">
+        <div className="absolute p-2 -translate-x-1/2 -translate-y-1/2 rounded-md tranform top-1/2 left-1/2 h-fit w-fit">
+          <p className="animate-pulse">Checking Library...</p>
+        </div>
+      </div>
+    );
+  }
+
   function fetchOnlineSaved() {
+    const libraryFile = localStorage?.getItem('excalidraw_library');
     return {
       files: JSON.parse(
         pageGetLatest.data?.content?.files ?? '[]'
@@ -183,6 +255,9 @@ export default function App(props: { page_id: string; content_id: string }) {
       appState: JSON.parse(
         pageGetLatest.data?.content?.appState ?? '{}'
       ) as ExcalidrawInitialDataState['appState'],
+      libraryItems: JSON.parse(
+        libraryFile ?? '[]'
+      ) as ExcalidrawInitialDataState['libraryItems'],
     };
   }
 
@@ -207,9 +282,9 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   return (
     <>
-      <div className="relative flex h-screen w-screen items-center justify-center">
+      <div className="relative flex items-center justify-center w-screen h-screen">
         {!excalidrawRef && (
-          <div className="tranform absolute top-1/2 left-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 rounded-md p-2">
+          <div className="absolute p-2 -translate-x-1/2 -translate-y-1/2 rounded-md tranform top-1/2 left-1/2 h-fit w-fit">
             <p className="animate-pulse">Loading...</p>
           </div>
         )}
@@ -237,7 +312,7 @@ export default function App(props: { page_id: string; content_id: string }) {
           documentName={
             <>
               {isCloudFetched && user.status === 'authenticated' && (
-                <label htmlFor="update-page" className="cursor-pointer text-sm">
+                <label htmlFor="update-page" className="text-sm cursor-pointer">
                   {pageGetLatest.data?.documentName ?? 'Untitled'}
                 </label>
               )}

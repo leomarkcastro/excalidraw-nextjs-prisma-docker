@@ -84,6 +84,7 @@ model Notebook {
   description String?
   Members     AccountToNotebook[]
   Pages       Page[]
+  library     String?             @default("[]")
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
 }
