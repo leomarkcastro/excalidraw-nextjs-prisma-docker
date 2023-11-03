@@ -225,8 +225,8 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   if (isCloudFetched && pageGetLatest.isLoading) {
     return (
-      <div className="relative flex items-center justify-center w-screen h-screen">
-        <div className="absolute p-2 -translate-x-1/2 -translate-y-1/2 rounded-md tranform top-1/2 left-1/2 h-fit w-fit">
+      <div className="relative flex h-screen w-screen items-center justify-center">
+        <div className="tranform absolute top-1/2 left-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 rounded-md p-2">
           <p className="animate-pulse">Loading...</p>
         </div>
       </div>
@@ -235,8 +235,8 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   if (checkingFiles) {
     return (
-      <div className="relative flex items-center justify-center w-screen h-screen">
-        <div className="absolute p-2 -translate-x-1/2 -translate-y-1/2 rounded-md tranform top-1/2 left-1/2 h-fit w-fit">
+      <div className="relative flex h-screen w-screen items-center justify-center">
+        <div className="tranform absolute top-1/2 left-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 rounded-md p-2">
           <p className="animate-pulse">Checking Library...</p>
         </div>
       </div>
@@ -282,9 +282,9 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   return (
     <>
-      <div className="relative flex items-center justify-center w-screen h-screen">
+      <div className="relative flex h-screen w-screen items-center justify-center">
         {!excalidrawRef && (
-          <div className="absolute p-2 -translate-x-1/2 -translate-y-1/2 rounded-md tranform top-1/2 left-1/2 h-fit w-fit">
+          <div className="tranform absolute top-1/2 left-1/2 h-fit w-fit -translate-x-1/2 -translate-y-1/2 rounded-md p-2">
             <p className="animate-pulse">Loading...</p>
           </div>
         )}
@@ -312,7 +312,7 @@ export default function App(props: { page_id: string; content_id: string }) {
           documentName={
             <>
               {isCloudFetched && user.status === 'authenticated' && (
-                <label htmlFor="update-page" className="text-sm cursor-pointer">
+                <label htmlFor="update-page" className="cursor-pointer text-sm">
                   {pageGetLatest.data?.documentName ?? 'Untitled'}
                 </label>
               )}
