@@ -48,6 +48,26 @@ export default function App(props: { page_id: string; content_id: string }) {
   const [checkingFiles, setCheckingFiles] = useState<any>(true);
   const isProcessing = useRef(false);
 
+  function safeJSONParse<T>(data: string | null, defaultValue: T): T {
+    if (!data) {
+      return defaultValue;
+    }
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      console.warn(e);
+      return defaultValue;
+    }
+  }
+
+  function safeLSGetItemParsed<T>(key: string, defaultValue: T): T {
+    const rawData = localStorage?.getItem(key);
+    if (!rawData || rawData === 'undefined' || rawData === 'null') {
+      return defaultValue;
+    }
+    return safeJSONParse(rawData, defaultValue);
+  }
+
   async function processEmbeddedLibrary(addLibrary: string | null) {
     if (!addLibrary) {
       return;
@@ -58,15 +78,18 @@ export default function App(props: { page_id: string; content_id: string }) {
     // console.log(json);
     json = json.libraryItems;
     // if excalidraw is already loaded, add the library
-    const currentExcalidraw = localStorage?.getItem('excalidraw_library');
-    if (currentExcalidraw) {
-      const currentExcalidrawJson = JSON.parse(currentExcalidraw);
-      currentExcalidrawJson.push(...json);
+    const currentExcalidraw = safeLSGetItemParsed<any[] | false>(
+      'excalidraw_library',
+      false
+    );
+    // const currentExcalidraw = localStorage?.getItem('excalidraw_library');
+    if (currentExcalidraw && Array.isArray(currentExcalidraw)) {
+      currentExcalidraw.push(...json);
 
       // console.log(json);
       localStorage?.setItem(
         'excalidraw_library',
-        JSON.stringify(currentExcalidrawJson)
+        JSON.stringify(currentExcalidraw)
       );
     } else {
       // console.log(json);
@@ -164,24 +187,23 @@ export default function App(props: { page_id: string; content_id: string }) {
         files: [] as any,
         appState: {} as ExcalidrawInitialDataState['appState'],
       };
-    const elements = localStorage?.getItem('excalidraw_elements');
-    const files = localStorage?.getItem('excalidraw_files');
-    const appState = localStorage?.getItem('excalidraw_appState');
-    const libraryFile = localStorage?.getItem('excalidraw_library');
 
     return {
-      elements: (elements
-        ? JSON.parse(elements)
-        : []) as ExcalidrawInitialDataState['elements'],
-      files: (files
-        ? JSON.parse(files)
-        : []) as ExcalidrawInitialDataState['files'],
-      appState: (appState
-        ? JSON.parse(appState)
-        : {}) as ExcalidrawInitialDataState['appState'],
-      libraryItems: JSON.parse(
-        libraryFile ?? '[]'
-      ) as ExcalidrawInitialDataState['libraryItems'],
+      elements: safeLSGetItemParsed<ExcalidrawInitialDataState['elements']>(
+        'excalidraw_elements',
+        []
+      ),
+      files: safeLSGetItemParsed<ExcalidrawInitialDataState['files']>(
+        'excalidraw_files',
+        [] as any
+      ),
+      appState: safeLSGetItemParsed<ExcalidrawInitialDataState['appState']>(
+        'excalidraw_appState',
+        {}
+      ),
+      libraryItems: safeLSGetItemParsed<
+        ExcalidrawInitialDataState['libraryItems']
+      >('excalidraw_library', []),
     };
   }
 
@@ -244,20 +266,22 @@ export default function App(props: { page_id: string; content_id: string }) {
   }
 
   function fetchOnlineSaved() {
-    const libraryFile = localStorage?.getItem('excalidraw_library');
     return {
-      files: JSON.parse(
-        pageGetLatest.data?.content?.files ?? '[]'
-      ) as ExcalidrawInitialDataState['files'],
-      elements: JSON.parse(
-        pageGetLatest.data?.content?.content ?? '[]'
-      ) as ExcalidrawInitialDataState['elements'],
-      appState: JSON.parse(
-        pageGetLatest.data?.content?.appState ?? '{}'
-      ) as ExcalidrawInitialDataState['appState'],
-      libraryItems: JSON.parse(
-        libraryFile ?? '[]'
-      ) as ExcalidrawInitialDataState['libraryItems'],
+      files: safeJSONParse<ExcalidrawInitialDataState['files']>(
+        pageGetLatest.data?.content?.files ?? '[]',
+        [] as any
+      ),
+      elements: safeJSONParse<ExcalidrawInitialDataState['elements']>(
+        pageGetLatest.data?.content?.content ?? '[]',
+        []
+      ),
+      appState: safeJSONParse<ExcalidrawInitialDataState['appState']>(
+        pageGetLatest.data?.content?.appState ?? '{}',
+        {}
+      ),
+      libraryItems: safeLSGetItemParsed<
+        ExcalidrawInitialDataState['libraryItems']
+      >('excalidraw_library', []),
     };
   }
 
