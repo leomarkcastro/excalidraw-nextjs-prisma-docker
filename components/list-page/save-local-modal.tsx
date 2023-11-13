@@ -9,7 +9,9 @@ export interface SaveLocalFileModalProps {
 
 const SaveLocalFileModal: React.FC<SaveLocalFileModalProps> = (props) => {
   const router = useRouter();
-  const notebookList = trpc.excalidraw.notebook_list.useQuery();
+  const notebookList = trpc.excalidraw.notebook_list.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
   const notebookCreate = trpc.excalidraw.notebook_create.useMutation();
   const pageCreate = trpc.excalidraw.page_create.useMutation();
   const contentCreate = trpc.excalidraw.content_update.useMutation();

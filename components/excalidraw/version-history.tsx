@@ -6,9 +6,14 @@ export interface VersionHistoryProps {
 }
 
 const VersionHistory: React.FC<VersionHistoryProps> = (props) => {
-  const pageData = trpc.excalidraw.page_get.useQuery({
-    pageId: props.pageId,
-  });
+  const pageData = trpc.excalidraw.page_get.useQuery(
+    {
+      pageId: props.pageId,
+    },
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
 
   return (
     <>

@@ -25,7 +25,9 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const { data: notebook_list, refetch: notebook_list_refetch } =
-    trpc.excalidraw.notebook_list.useQuery();
+    trpc.excalidraw.notebook_list.useQuery(undefined, {
+      refetchOnWindowFocus: false,
+    });
   const notebookCreate = trpc.excalidraw.notebook_create.useMutation();
   const notebookUpdate = trpc.excalidraw.notebook_update_details.useMutation();
   const notebookDelete = trpc.excalidraw.notebook_delete.useMutation();

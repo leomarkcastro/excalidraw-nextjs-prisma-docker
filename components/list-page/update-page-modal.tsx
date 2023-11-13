@@ -19,6 +19,7 @@ const UpdatePageModal: React.FC<UpdatePageModalProps> = (props) => {
     },
     {
       enabled: !!pageId,
+      refetchOnWindowFocus: false,
     }
   );
 

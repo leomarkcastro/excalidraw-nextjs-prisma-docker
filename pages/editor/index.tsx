@@ -43,6 +43,7 @@ export default function App(props: { page_id: string; content_id: string }) {
   const [excalidrawRef, setExcalidrawRef] = useState<any>(null);
   const [lastSavedScene, setLastSavedScene] = useState<any>(null);
   const lastSave = useRef(Date.now());
+  const lastUpdateCommit = useRef(Date.now());
   const declaredShortcuts = useRef(false);
 
   const [checkingFiles, setCheckingFiles] = useState<any>(true);
@@ -207,8 +208,8 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   async function onChange() {
     if (!excalidrawRef) return;
-    if (Date.now() - lastSave.current < saveEvery) return;
-    lastSave.current = Date.now();
+    if (Date.now() - lastUpdateCommit.current < saveEvery) return;
+    lastUpdateCommit.current = Date.now();
     // console.log(`calling update ${updateIndex}`);
     setUpdateIndex((prev) => prev + 1);
   }
