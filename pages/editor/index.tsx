@@ -133,6 +133,8 @@ export default function App(props: { page_id: string; content_id: string }) {
     if (!shouldSave) return;
     if (!props.page_id) return;
     if (pageGetLatest.isLoading) return;
+    if (Date.now() - lastSave.current < saveEvery) return;
+    lastSave.current = Date.now();
 
     const elements = excalidrawRef.getSceneElements();
     const files = excalidrawRef.getFiles();
@@ -159,6 +161,8 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   async function onChangeLocal() {
     if (!excalidrawRef) return;
+    if (Date.now() - lastSave.current < saveEvery) return;
+    lastSave.current = Date.now();
 
     const elements = excalidrawRef.getSceneElements();
     const files = excalidrawRef.getFiles();
