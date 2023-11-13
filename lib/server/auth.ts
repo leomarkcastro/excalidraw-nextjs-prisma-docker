@@ -5,6 +5,9 @@ import prisma from '@/lib/server/prismadb';
 import bcrypt from 'bcrypt';
 import { DefaultSession } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import { OAuthConfig } from 'next-auth/providers/oauth';
+
+type OAC = OAuthConfig<any>;
 
 // declare Session to have an id
 declare module 'next-auth' {
@@ -89,15 +92,54 @@ export const authOptions = {
         return userJWT;
       },
     }),
+    {
+      id: 'logto',
+      name: 'LogtoOAuth',
+      type: 'oauth',
+      wellKnown:
+        'https://auth-api.app01.xyzapps.xyz/oidc/.well-known/openid-configuration',
+      clientId: 'j0eh92hb2ioxf5yepo4v6',
+      clientSecret: 'aut0GxkCU4ycTBKfHmNcGRDHBjEJL9JN',
+      authorization: {
+        params: {
+          // codeChallengeMethod: 'S256',
+          // grantType: 'authorization_code',
+          scope: 'openid profile email',
+          prompt: 'login',
+        },
+      },
+      client: {
+        token_endpoint_auth_signing_alg: 'RS256',
+        id_token_signed_response_alg: 'ES384',
+      },
+      // checks: ['s256'],
+
+      profile(profile: any, tokens: any) {
+        // console.log('profile', profile);
+        // console.log('tokens', tokens);
+        return {
+          id: profile.sub,
+          email: profile.email,
+          emailVerified: profile.email_verified,
+          image: profile.picture,
+          name: profile.name ?? profile.username,
+        };
+      },
+    },
     // ...add more providers here
   ],
   callbacks: {
     // @ts-ignore
     async signIn({ account, profile }) {
-      if (account.provider === 'google') {
-        //check if user is in your database
-        const email = profile.email;
-        return true;
+      switch (account.provider) {
+        case 'google': {
+          return true;
+        }
+        case 'logto': {
+          return true;
+        }
+        default:
+          return false;
       }
     },
     // @ts-ignore
@@ -119,6 +161,7 @@ export const authOptions = {
       // console.log(JSON.stringify(sess, null, 2));
       // Add addtional properties to the session object.
       sess.session.user = { ...sess.session.user, ...sess.token.metadata };
+      // console.log('session', sess.session);
       return sess.session;
     },
   },

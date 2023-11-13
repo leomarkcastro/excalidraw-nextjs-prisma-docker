@@ -9,12 +9,14 @@ export default function Auth() {
     // console.log(data);
   }
 
+  // console.log('session', session);
+
   if (session) {
     return (
       <div className="flex flex-col items-end justify-end break-all text-right">
         <p>
           Signed in as <br />
-          {session.user?.email}
+          {session.user?.email ?? session.user?.name ?? session.user?.id}
         </p>
         <button className="text-secondary" onClick={() => signOut()}>
           Sign out

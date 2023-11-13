@@ -44,6 +44,17 @@ export default function SignIn({
           >
             Login with Google
           </button>
+          {/* <button
+            className="border-2 d-btn-ghost d-btn border-primary"
+            onClick={async () => {
+              const resp = await signIn('logto', {
+                redirect: true,
+                callbackUrl: router.query.callbackUrl as string,
+              });
+            }}
+          >
+            Login with LogTo
+          </button> */}
           <div className="">
             <input name="csrfToken" type="hidden" defaultValue={csrfToken} />
             <div className="d-form-control w-full max-w-xs">

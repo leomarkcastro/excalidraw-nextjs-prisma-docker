@@ -48,6 +48,8 @@ export default function App(props: { page_id: string; content_id: string }) {
   const [checkingFiles, setCheckingFiles] = useState<any>(true);
   const isProcessing = useRef(false);
 
+  const [updateIndex, setUpdateIndex] = useState(0);
+
   function safeJSONParse<T>(data: string | null, defaultValue: T): T {
     if (!data) {
       return defaultValue;
@@ -130,8 +132,6 @@ export default function App(props: { page_id: string; content_id: string }) {
     if (!shouldSave) return;
     if (!props.page_id) return;
     if (pageGetLatest.isLoading) return;
-    if (Date.now() - lastSave.current < saveEvery) return;
-    lastSave.current = Date.now();
 
     const elements = excalidrawRef.getSceneElements();
     const files = excalidrawRef.getFiles();
@@ -158,8 +158,6 @@ export default function App(props: { page_id: string; content_id: string }) {
 
   async function onChangeLocal() {
     if (!excalidrawRef) return;
-    if (Date.now() - lastSave.current < saveEvery) return;
-    lastSave.current = Date.now();
 
     const elements = excalidrawRef.getSceneElements();
     const files = excalidrawRef.getFiles();
@@ -208,12 +206,29 @@ export default function App(props: { page_id: string; content_id: string }) {
   }
 
   async function onChange() {
-    if (isCloudFetched) {
-      return onChangeCloud();
-    } else {
-      return onChangeLocal();
-    }
+    if (!excalidrawRef) return;
+    if (Date.now() - lastSave.current < saveEvery) return;
+    lastSave.current = Date.now();
+    // console.log(`calling update ${updateIndex}`);
+    setUpdateIndex((prev) => prev + 1);
   }
+
+  useEffect(() => {
+    if (updateIndex === 0) return;
+    if (!excalidrawRef) return;
+    const updateTimeout = setTimeout(() => {
+      // console.log('updating');
+      if (isCloudFetched) {
+        return onChangeCloud();
+      } else {
+        return onChangeLocal();
+      }
+    }, 1000);
+
+    return () => {
+      clearTimeout(updateTimeout);
+    };
+  }, [updateIndex]);
 
   useEffect(() => {
     // listen for keyboard shortcuts

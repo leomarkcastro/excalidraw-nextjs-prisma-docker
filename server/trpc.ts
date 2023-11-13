@@ -11,7 +11,7 @@ const t = initTRPC.context<Context>().create();
 export const router = t.router;
 
 const isAuthed = t.middleware(({ next, ctx }) => {
-  if (!ctx.session?.user?.email) {
+  if (!ctx.session?.user?.id) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
     });
@@ -25,7 +25,7 @@ const isAuthed = t.middleware(({ next, ctx }) => {
 });
 
 const isOptionalAuthed = t.middleware(({ next, ctx }) => {
-  if (!ctx.session?.user?.email) {
+  if (!ctx.session?.user?.id) {
   }
   return next({
     ctx: {
