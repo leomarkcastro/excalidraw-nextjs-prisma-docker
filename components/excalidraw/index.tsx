@@ -33,7 +33,7 @@ export default function ExcalidrawComponent(props: ExcalidrawProps) {
       }}
       renderTopRightUI={() => {
         return (
-          <div className="hidden sm:contents">
+          <div className="hidden xl:contents">
             {props.isAuthed && !props.shouldSave && (
               <button
                 className="rounded-lg border border-neutral-600 bg-base-300 px-2 text-xs"
@@ -85,6 +85,7 @@ export default function ExcalidrawComponent(props: ExcalidrawProps) {
     >
       <MainMenuComponent
         isAuthed={props.isAuthed}
+        isCloudFetched={props.isCloudFetched}
         mobileOnlyComponents={
           <>
             {props.isAuthed && props.isCloudFetched && (

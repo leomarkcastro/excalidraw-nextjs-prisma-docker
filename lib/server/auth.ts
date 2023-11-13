@@ -131,12 +131,16 @@ export const authOptions = {
   callbacks: {
     // @ts-ignore
     async signIn({ account, profile }) {
+      console.log('signIn', account, profile);
       switch (account.provider) {
         case 'google': {
           return true;
         }
-        case 'logto': {
+        case 'credentials': {
           return true;
+        }
+        case 'logto': {
+          return false;
         }
         default:
           return false;

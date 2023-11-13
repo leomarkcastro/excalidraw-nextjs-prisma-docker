@@ -6,6 +6,7 @@ import { GoCloud, GoHome } from 'react-icons/go';
 export interface MainMenuProps {
   mobileOnlyComponents?: React.ReactNode;
   isAuthed?: boolean;
+  isCloudFetched?: boolean;
 }
 
 const MainMenuComponent: React.FC<MainMenuProps> = (props) => {
@@ -32,6 +33,17 @@ const MainMenuComponent: React.FC<MainMenuProps> = (props) => {
         {!props.isAuthed && (
           <MainMenu.Item onSelect={() => signIn()} icon={<GoCloud />}>
             Save Online
+          </MainMenu.Item>
+        )}
+        {props.isAuthed && !props.isCloudFetched && (
+          <MainMenu.Item
+            onSelect={() => {
+              // simulate click for label htmlFor
+              document.getElementById('save-local-file')?.click();
+            }}
+            icon={<GoCloud />}
+          >
+            Save to Cloud
           </MainMenu.Item>
         )}
         {props.mobileOnlyComponents}
