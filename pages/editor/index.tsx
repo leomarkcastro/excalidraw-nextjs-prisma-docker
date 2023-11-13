@@ -18,6 +18,7 @@ const VersionHistory = dynamic(
 );
 
 const saveEvery = 0.25 * 1000;
+const debounceDelay = 0.5 * 1000;
 
 export default function App(props: { page_id: string; content_id: string }) {
   const isCloudFetched = !!props.page_id;
@@ -228,7 +229,7 @@ export default function App(props: { page_id: string; content_id: string }) {
       } else {
         return onChangeLocal();
       }
-    }, 1000);
+    }, debounceDelay);
 
     return () => {
       clearTimeout(updateTimeout);
