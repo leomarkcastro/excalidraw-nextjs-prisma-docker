@@ -1,6 +1,6 @@
 import { trpc } from '@/lib/server/trpc';
 import dynamic from 'next/dynamic';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 const ExcalidrawExportCanvas = dynamic(
   () => import('@/components/excalidraw/export-canvas'),
   {
@@ -13,17 +13,6 @@ export default function App(props: { page_id: string; content_id: string }) {
   const [canvasUrl, setCanvasUrl] = useState<SVGSVGElement | null>(null);
   const svg = useRef<HTMLDivElement>(null);
   const uriSave = trpc.excalidraw.uri_save.useMutation();
-
-  useEffect(() => {
-    if (svg.current && canvasUrl) {
-      // set width and height of canvasUrl to fit svg
-      const width = svg.current.clientWidth;
-      const height = svg.current.clientHeight;
-      canvasUrl.setAttribute('width', `${width}`);
-      canvasUrl.setAttribute('height', `${height}`);
-      svg.current.appendChild(canvasUrl as SVGSVGElement);
-    }
-  }, [canvasUrl]);
 
   function serializeSvgString(svg: SVGSVGElement) {
     const svgString = new XMLSerializer().serializeToString(svg);
