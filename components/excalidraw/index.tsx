@@ -1,6 +1,7 @@
 import { Excalidraw, Footer, MainMenu, Sidebar } from '@excalidraw/excalidraw';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { GoArchive, GoListUnordered } from 'react-icons/go';
+import { GoArchive, GoImage, GoListUnordered } from 'react-icons/go';
 import MainMenuComponent from './main-menu';
 
 export type ExcalidrawProps = React.ComponentProps<typeof Excalidraw> & {
@@ -19,6 +20,7 @@ export type ExcalidrawProps = React.ComponentProps<typeof Excalidraw> & {
 export default function ExcalidrawComponent(props: ExcalidrawProps) {
   const [excalidrawRef, setExcalidrawRef] = useState<any>(null);
   const [docked, setDocked] = useState(false);
+  const router = useRouter();
 
   // @ts-ignore
   return (
@@ -90,6 +92,22 @@ export default function ExcalidrawComponent(props: ExcalidrawProps) {
           <>
             {props.isAuthed && props.isCloudFetched && (
               <>
+                <MainMenu.Item
+                  onSelect={() => {
+                    // get page query params
+                    const url = new URL(window.location.href);
+                    const page = url.searchParams.get('page');
+                    // open in new tab
+                    window.open(
+                      `/view?page=${page}`,
+                      '_blank',
+                      'noopener noreferrer'
+                    );
+                  }}
+                  icon={<GoImage />}
+                >
+                  View
+                </MainMenu.Item>
                 <MainMenu.Item
                   onSelect={() => {
                     props.save?.();

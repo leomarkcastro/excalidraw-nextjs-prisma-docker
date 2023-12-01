@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaCog, FaTrash } from 'react-icons/fa';
+import { FaCog, FaEye, FaTrash } from 'react-icons/fa';
 import {
   adjectives,
   colors,
@@ -218,6 +218,12 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                             >
                               <FaTrash />
                             </label>
+                            <a
+                              className="text-xs"
+                              href={`/view?page=${page.id}`}
+                            >
+                              <FaEye />
+                            </a>
                             <p className="text-xs">
                               (Last Edited:{' '}
                               {new Date(

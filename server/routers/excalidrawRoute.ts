@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { protectedProcedure, router, semiProtectedProcedure } from '../trpc';
+import {
+  protectedProcedure,
+  publicProcedure,
+  router,
+  semiProtectedProcedure,
+} from '../trpc';
 
 const notebookRoles = {
   OWNER: 'OWNER',
@@ -553,5 +558,41 @@ export const excalidrawRouter = router({
           },
         });
       }
+    }),
+  // uri_save
+  uri_save: protectedProcedure
+    .input(
+      z.object({
+        uri: z.string(),
+        name: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      let name = input.name ?? new Date().toISOString();
+      const savedURI = await ctx.prisma.uriFile.create({
+        data: {
+          uri: input.uri,
+          name,
+        },
+      });
+      return savedURI.id;
+    }),
+  // uri_get
+  uri_get: publicProcedure
+    .input(
+      z.object({
+        uriId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const uri = await ctx.prisma.uriFile.findFirst({
+        where: {
+          id: input.uriId,
+        },
+      });
+      if (!uri) {
+        throw new Error('URI not found');
+      }
+      return uri;
     }),
 });
