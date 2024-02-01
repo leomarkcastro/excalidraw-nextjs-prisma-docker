@@ -97,7 +97,7 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
   const [search, setSearch] = useState<string>('');
 
   // filter notebook and pages
-  const filtered_notebook_list = notebook_list?.filter((notebook) => {
+  const _filtered_notebook_list = notebook_list?.filter((notebook) => {
     const isNotebookName = notebook.name
       .toLowerCase()
       .includes(search.toLowerCase());
@@ -114,6 +114,44 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
       isNotebookName || isPageName || isNotebookDescription || isPageDescription
     );
   });
+
+  const filtered_notebook_list = notebook_list?.reduce((acc, notebook) => {
+    const isNotebookName = notebook.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const isPageName = notebook.Pages.some((page) => {
+      return page.name.toLowerCase().includes(search.toLowerCase());
+    });
+    const isNotebookDescription = notebook.description
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+    const isPageDescription = notebook.Pages.some((page) => {
+      return page.description?.toLowerCase().includes(search.toLowerCase());
+    });
+    if (
+      isNotebookName ||
+      isPageName ||
+      isNotebookDescription ||
+      isPageDescription
+    ) {
+      // filter notebook pages
+      const filtered_pages = notebook.Pages.filter((page) => {
+        const isPageName = page.name
+          .toLowerCase()
+          .includes(search.toLowerCase());
+        const isPageDescription = page.description
+          ?.toLowerCase()
+          .includes(search.toLowerCase());
+        return isPageName || isPageDescription;
+      });
+      if (filtered_pages.length > 0) {
+        acc.push({ ...notebook, Pages: filtered_pages });
+      } else {
+        acc.push(notebook);
+      }
+    }
+    return acc;
+  }, [] as any);
 
   return (
     <>
