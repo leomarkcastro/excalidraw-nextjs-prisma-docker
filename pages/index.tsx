@@ -202,7 +202,7 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                 + Create Notebook
               </label>
             </h2>
-            {filtered_notebook_list?.map((notebook) => {
+            {filtered_notebook_list?.map((notebook: any) => {
               return (
                 <div
                   className="my-4 w-fit border-t border-t-neutral-50/50 pt-4 pl-4"
@@ -249,7 +249,7 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 pt-4 pl-8">
-                    {notebook.Pages.map((page) => {
+                    {notebook.Pages.map((page: any) => {
                       return (
                         <div key={page.id}>
                           <p>
