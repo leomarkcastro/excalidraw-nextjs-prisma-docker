@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { FaCog, FaEye, FaTrash } from 'react-icons/fa';
+import { FaCog, FaTrash } from 'react-icons/fa';
 import {
   adjectives,
   colors,
@@ -94,6 +94,27 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
     notebook_list_refetch();
   }
 
+  const [search, setSearch] = useState<string>('');
+
+  // filter notebook and pages
+  const filtered_notebook_list = notebook_list?.filter((notebook) => {
+    const isNotebookName = notebook.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const isPageName = notebook.Pages.some((page) => {
+      return page.name.toLowerCase().includes(search.toLowerCase());
+    });
+    const isNotebookDescription = notebook.description
+      ?.toLowerCase()
+      .includes(search.toLowerCase());
+    const isPageDescription = notebook.Pages.some((page) => {
+      return page.description?.toLowerCase().includes(search.toLowerCase());
+    });
+    return (
+      isNotebookName || isPageName || isNotebookDescription || isPageDescription
+    );
+  });
+
   return (
     <>
       <div className="mx-auto mb-24 max-w-screen-lg px-6 pt-16">
@@ -128,8 +149,14 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
         )}
         {session && (
           <div className="w-fit border-t border-t-neutral-50/50 pt-4">
-            <h2 className="text-2xl">
-              Notebooks
+            <h2 className="flex items-center text-2xl">
+              <span>Notebooks</span>
+              <input
+                type="text"
+                className="d-input-bordered d-input d-input-sm mt-4 mb-4 ml-4"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              ></input>
               <label
                 htmlFor="create-modal"
                 className="ml-8 bg-primary text-sm text-primary-content"
@@ -137,7 +164,7 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                 + Create Notebook
               </label>
             </h2>
-            {notebook_list?.map((notebook) => {
+            {filtered_notebook_list?.map((notebook) => {
               return (
                 <div
                   className="my-4 w-fit border-t border-t-neutral-50/50 pt-4 pl-4"
@@ -218,12 +245,12 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                             >
                               <FaTrash />
                             </label>
-                            <a
+                            {/* <a
                               className="text-xs"
                               href={`/view?page=${page.id}`}
                             >
                               <FaEye />
-                            </a>
+                            </a> */}
                             <p className="text-xs">
                               (Last Edited:{' '}
                               {new Date(

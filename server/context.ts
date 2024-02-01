@@ -9,10 +9,12 @@ import { getSession } from 'next-auth/react';
 export async function createContext(opts: trpcNext.CreateNextContextOptions) {
   const session = await getSession({ req: opts.req });
   const prisma = await import('@/lib/server/prismadb');
+  const req = opts.req;
 
   return {
     session,
     prisma: prisma.default,
+    req,
   };
 }
 

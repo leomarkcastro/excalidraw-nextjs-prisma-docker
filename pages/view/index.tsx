@@ -67,10 +67,11 @@ export default function App(props: { page_id: string; content_id: string }) {
             uri: svgString,
           });
           // redirect to new page via location.href
-          window.location.href = `view/${result}`;
+          // window.location.href = `view/${result}`;
+          console.log(result);
 
           // const svg = parsingSvgString(svgString);
-          setCanvasUrl(svg as unknown as SVGSVGElement);
+          // setCanvasUrl(svg as unknown as SVGSVGElement);
         }}
       />
       <div className="relative h-full w-full">

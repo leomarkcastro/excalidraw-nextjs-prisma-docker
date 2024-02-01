@@ -192,7 +192,13 @@ export const excalidrawRouter = router({
               take: 1,
             },
           },
+          orderBy: {
+            updatedAt: 'desc',
+          },
         },
+      },
+      orderBy: {
+        updatedAt: 'desc',
       },
     });
   }),
@@ -594,5 +600,22 @@ export const excalidrawRouter = router({
         throw new Error('URI not found');
       }
       return uri;
+    }),
+  test: publicProcedure
+    .meta({ openapi: { method: 'GET', path: '/say-hello' } })
+    .input(
+      z.object({
+        text: z.string(),
+      })
+    )
+    .output(
+      z.object({
+        greeting: z.string(),
+      })
+    )
+    .query(({ input, ctx }) => {
+      return {
+        greeting: `hello -> ${input.text}`,
+      };
     }),
 });
