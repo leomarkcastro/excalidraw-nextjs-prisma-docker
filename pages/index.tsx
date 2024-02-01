@@ -187,21 +187,23 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
         )}
         {session && (
           <div className="w-fit border-t border-t-neutral-50/50 pt-4">
-            <h2 className="flex items-center text-2xl">
-              <span>Notebooks</span>
+            <div className="flex flex-wrap items-center">
+              <h2 className="text-2xl">
+                <span>Notebooks</span>
+              </h2>
               <input
                 type="text"
-                className="d-input-bordered d-input d-input-sm mt-4 mb-4 ml-4"
+                className="d-input-bordered d-input d-input-sm mt-4 mb-4 ml-4 w-full"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               ></input>
               <label
                 htmlFor="create-modal"
-                className="ml-8 bg-primary text-sm text-primary-content"
+                className="bg-primary text-sm text-primary-content"
               >
                 + Create Notebook
               </label>
-            </h2>
+            </div>
             {filtered_notebook_list?.map((notebook: any) => {
               return (
                 <div
@@ -209,8 +211,8 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                   key={notebook.id}
                 >
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-4">
-                      <h3 className="text-xl text-primary">
+                    <div className="flex flex-wrap items-center gap-1">
+                      <h3 className="break-all text-xl text-primary">
                         {notebook.name} (
                         {notebook.id.substring(0, 10).toUpperCase()})
                       </h3>
@@ -254,7 +256,7 @@ const HomePage: NextPageWithLayout<HomePageProps> = () => {
                         <div key={page.id}>
                           <p>
                             <a
-                              className="block text-secondary"
+                              className="block break-all pr-2 text-secondary"
                               href={`/editor?page=${page.id}`}
                             >
                               - {page.name}(
